@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShadowLink - URL Shortener</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            overflow: hidden;
+            position: relative;
+        }
+        /* Animated background elements */
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+        .bg-element:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            background: #4a00e0;
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+        .bg-element:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: #1a237e;
+            bottom: -200px;
+            right: -200px;
+            animation-delay: 5s;
+        }
+        .bg-element:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            background: #311b92;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 10s;
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(30px, -30px) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+        }
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            background: rgba(20, 20, 35, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5),
+                        0 5px 15px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeIn 1s ease-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(142, 45, 226, 0.3);
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #c0c0c0;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(30, 30, 45, 0.7);
+            border: 1px solid rgba(100, 100, 150, 0.3);
+            border-radius: 10px;
+            color: #f0f0f0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        input:focus {
+            border-color: #8e2de2;
+            box-shadow: 0 0 15px rgba(142, 45, 226, 0.3),
+                        0 0 5px rgba(142, 45, 226, 0.5);
+            background: rgba(35, 35, 55, 0.8);
+        }
+        input::placeholder {
+            color: #707090;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        button {
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(142, 45, 226, 0.6);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        button:hover::before {
+            left: 100%;
+        }
+        /* Floating particles animation */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(142, 45, 226, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-float 15s linear infinite;
+        }
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.4;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            button {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background elements -->
+    <div class="bg-element"></div>
+    <div class="bg-element"></div>
+    <div class="bg-element"></div>
+    
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Main form container -->
+    <div class="container">
+        <h1>ShadowLink</h1>
+        <p class="subtitle">Transform your long URLs into shadowy short links</p>
+        
+           
+        <form id="urlShortenerForm" action="/short" method="post">
+            <div class="form-group">
+                <label for="urlInput">Original URL</label>
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    name="long_url"
+                    placeholder="https://example.com/very/long/url" 
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="titleInput">Title (Optional)</label>
+                <input 
+                    type="text" 
+                    id="titleInput" 
+                    name="title"
+                    placeholder="My Awesome Link"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="aliasInput">Custom Alias (Optional)</label>
+                <input 
+                    type="text" 
+                    id="aliasInput" 
+                    name="custom_url"
+                    placeholder="my-custom-link"
+                >
+            </div>
+            
+            <div class="btn-container">
+                <button type="submit">Shorten URL</button>
+            </div>
+             <div class="btn-container">
+               <a href="/list"> <button type="button">See All</button></a>
+            </div>
+        </form>
+    </div>
+    <script>
+// Create floating particles
+function createParticles() {
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 30;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random size between 2px and 6px
+        const size = Math.random() * 4 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Random starting position
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        
+        // Random animation duration
+        const duration = Math.random() * 10 + 15;
+        particle.style.animationDuration = `${duration}s`;
+        
+        // Random delay
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        
+        particlesContainer.appendChild(particle);
+    }
+}
+
+// Initialize particles on page load
+window.addEventListener('load', createParticles);
+    </script>
+</body>
+</html>
